@@ -1,4 +1,6 @@
 # Feeding the City Research Analysis
+Shirin Arghandeh
+
 Last updated: June 8, 2020
 
 A data analysis into sustainability and food security impacts in the context of COVID-19.

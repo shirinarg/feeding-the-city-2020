@@ -1,27 +1,60 @@
 ---
-title: "Toronto Gardeners Survey 2018 in COVID Context"
+title: "Toronto Gardeners Survey 2018 Analysis: COVID-19"
 author: "Shirin Arghandeh"
-date: '2020-05-20'
+date: '2020-06-08'
 output: pdf_document
 ---
 
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE, include = FALSE)
 library(readxl)
 # Importing and reading survey data.
 gardener_data <- read_excel("togardener_survey18.xls", col_names = TRUE)
-# Subbing NA for "No" in row entries.
-gardener_data[is.na(gardener_data)] = "No"
+
+# Subbing "NA" for "0" = "No".
+gardener_data[is.na(gardener_data)] = "0"
 str(gardener_data)
 attach(gardener_data)
 ```
 
 
-Creating cross-tabulations of variables garden type and duration of growing food.
+Cross-tabulation of types of gardens
 ```{r, include=TRUE}
-source("http://pcwww.liv.ac.uk/~william/R/crosstab.r")
+library(dplyr)
+library(knitr)
+library(reshape2)
 
+# Creating a separate dataset for growing duration and types of gardens.
+type_grow_df <- data_frame(growing_duration, balcony_garden, landlord_garden, inside_garden,
+                            comm_garden, allot_garden, coop_garden, else_garden, yard_garden, other_garden)
+# Single cross-tab
+source("http://pcwww.liv.ac.uk/~william/R/crosstab.r")
 crosstab(gardener_data, row.vars = "growing_duration", col.vars = "balcony_garden", type = "f")
-crosstab(gardener_data, row.vars = "growing_duration", col.vars = "landlord_garden", type = "f")
+
+# Creating a cross-tab on types of gardens vs growing duration.
+type_grow_cross <- type_grow_df %>% 
+  melt(id.var="growing_duration") %>%
+  filter(value!=0) %>%  # Remove No's
+  group_by(growing_duration, variable, value) %>%
+  summarise(count=n())
+type_grow_cross
+
 
 ```
+
+```{r, include=TRUE}
+# Creating a separate dataset for growing duration and types of gardens.
+type_num_plants_df <- data_frame(num_plants, balcony_garden, 
+                                 landlord_garden, inside_garden,comm_garden, allot_garden, coop_garden, else_garden,
+                                 yard_garden, other_garden)
+type_num_plants_cross <- type_num_plants_df %>% 
+  melt(id.var="num_plants") %>%
+  filter(value!=0) %>%  # Remove No's
+  group_by(num_plants, variable, value) %>%
+  summarise(count=n())
+type_num_plants_cross
+```
+
+
+

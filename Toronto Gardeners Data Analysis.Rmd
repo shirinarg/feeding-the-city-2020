@@ -1,10 +1,9 @@
 ---
-title: 'Toronto Gardeners Survey 2018 Analysis: COVID-19'
+title: 'Toronto Gardeners Survey Analysis: COVID-19'
 author: "Shirin Arghandeh"
 date: '2020-06-08'
-output:
-  html_document:
-    df_print: paged
+geometry: "left=1cm,right=1cm,top=1cm,bottom=1cm"
+output: pdf_document
 ---
 
 
@@ -16,11 +15,14 @@ str(gardener_data)
 attach(gardener_data)
 ```
 
+**Cross-Tabluations**
 
-Cross-tabulation of types of gardens
+Cross-tabulation of types of garden on duration gardeners have grown food:
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(janitor)
+library(knitr)
+library(kableExtra)
 
 type_dur_clean <- gardener_data %>%
   dplyr::select(id = `Internal ID`, growing_duration, contains("_garden"))
@@ -40,9 +42,22 @@ td_cross <- type_dur_long %>%
 
 ```
 ```{r echo=FALSE}
-knitr::kable(td_cross)
+kable(td_cross) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
 ```
 
+
+Note: co-op garden has been integrated into other garden.
+
+
+Testing for significance, we use Fisher's Exact Test to test the independence of variables garden type and Growing Duration. Our null hypothesis is that type of garden a gardener has is independent to the number of years a gardener has grown food.
+```{r}
+fisher.test(td_cross, simulate.p.value = TRUE,B=1e7)
+```
+Receiving error when workspace is set to $2e^7$ so tried simulating p-values based on number of Monte Carlo tests but this requires a very large number of simulations so p-value may not be accurate. It could be said that if $p<1e^{-7}$ the p-value is extremely small so we can reject the null hypothesis.
+
+
+Cross tabulation of types of gardens on number of plants gardeners have grown:
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 type_plant_clean <- gardener_data %>%
   dplyr::select(id = `Internal ID`, num_plants, contains("_garden"))
@@ -59,28 +74,36 @@ tp_cross <- type_plant_long %>%
 
 ```
 ```{r echo=FALSE}
-knitr::kable(tp_cross)
+
+kable(tp_cross) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
 ```
 
+Fisher's Exact Test for testing independence between garden type and number of plants grown.
+```{r}
+fisher.test(tp_cross, simulate.p.value=TRUE, B = 1e7)
+```
+
+
+Cross-tabulation of garden type versus where they get seeds.
 ```{r eval=FALSE, include=FALSE}
 type_seed_clean <- gardener_data %>%
-  dplyr::select(id = `Internal ID`, store_seed, own_seed, frcan_seed, frcoun_seed,
-                mecoun_seed, lib_seed, other_seed,
-                contains("_garden"))
+  dplyr::select(id = `Internal ID`,
+                contains("_garden"), contains("_seed"))
 
 type_seed_long <- type_seed_clean %>%
-  pivot_longer(contains("_garden"), names_to = "garden_type", values_to = "indicator") %>%
+  pivot_longer(contains("_garden"), names_to = "garden_type") %>%
+  pivot_longer(contains("_seed"), names_to = "get_seed", values_to = "indicator") %>%
   replace_na(list(indicator = 0))
 
-type_seed_long %>%
-  group_by(store_seed, own_seed, frcan_seed, frcoun_seed,
-                mecoun_seed, lib_seed, other_seed, garden_type) %>%
+ts_cross <- type_seed_long %>%
+  group_by(get_seed, garden_type) %>%
   summarize(num = sum(indicator)) %>%
-  pivot_wider(names_from = "garden_type", values_from = "num")
+  pivot_wider(names_from = c("garden_type", "get_seed"), values_from = "num")
 
-# "Total" row
-type_seed_long %>%
-  group_by(garden_type) %>%
-  summarize(num = sum(indicator)) %>%
-  pivot_wider(names_from = "garden_type", values_from = "num")
+# # "Total" row
+# type_seed_long %>%
+#   group_by(garden_type) %>%
+#   summarize(num = sum(indicator)) %>%
+#   pivot_wider(names_from = "garden_type", values_from = "num")
 ```

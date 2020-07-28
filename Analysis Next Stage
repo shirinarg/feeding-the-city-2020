@@ -30,9 +30,21 @@
         
 5) Garden Type vs. What they do with their food
 
-    donate_food, sell_food, other_food &#8594; give_food
+    donate_food, sell_food, other_food &#8594; **give_food**
     
-    eat_food, preserve_food &#8594; keep_food
+    eat_food, preserve_food &#8594; **keep_food**
     
-    family_food, friends_food &#8594; fam_food
+    family_food, friends_food &#8594; **fam_food**
 
+**Other cross tabs remaining:**
+Analyze each co-variate listed below with garden type:
+
+1. time in Canada/country of origin
+
+2. how long they have lived at that address
+
+3. accommodation type
+
+4. income
+
+5. age

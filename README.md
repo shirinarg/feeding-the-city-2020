@@ -1,5 +1,5 @@
 # Toronto Garden Analysis
-Last updated: July 28, 2020
+Last updated: October 16, 2020
 
 A data analysis into food security impacts of Toronto gardeners in the context of COVID-19.
 

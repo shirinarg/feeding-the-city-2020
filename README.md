@@ -1,7 +1,7 @@
-# Feeding the City Research Analysis
+# Toronto Garden Analysis
 Last updated: July 28, 2020
 
-A data analysis into sustainability and food security impacts in the context of COVID-19.
+A data analysis into food security impacts of Toronto gardeners in the context of COVID-19.
 
 In this repository, you will find:
 1. Dr. Sarah Elton's survey conducted on Toronto Gardeners in 2018. Both R markdown raw code and PDF file of R outputs are included.
